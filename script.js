@@ -3351,10 +3351,13 @@ async function loadCurrentUserCredits() {
   try {
     console.log('🔄 Loading current user credits...');
     
-    // Get current user email from auth or localStorage
+    // For admin dashboard, use test user since no authentication required
     let userEmail = '';
     
-    if (firebase.auth().currentUser) {
+    if (window.location.pathname.includes('admin-dashboard.html')) {
+      userEmail = 'admin-test@rvrjcce.edu.in';
+      console.log('👤 Using test user for admin dashboard:', userEmail);
+    } else if (firebase.auth().currentUser) {
       userEmail = firebase.auth().currentUser.email;
       console.log('👤 User from auth:', userEmail);
     } else {
@@ -3656,34 +3659,20 @@ async function testCreditSystemAction(action) {
   try {
     console.log(`🧪 Testing credit system action: ${action}`);
     
-    // Get current user email
-    let userEmail = '';
-    
-    if (firebase.auth().currentUser) {
-      userEmail = firebase.auth().currentUser.email;
-    } else {
-      userEmail = localStorage.getItem('userEmail') || '';
-    }
-    
-    if (!userEmail) {
-      console.error('❌ No user email found for testing');
-      const resultElement = document.getElementById('creditTestResult');
-      if (resultElement) {
-        resultElement.innerHTML = '<span style="color: #f44336;">❌ No user email found. Please log in first.</span>';
-      }
-      return;
-    }
+    // Use a test email for credit system testing since admin doesn't need login
+    const testEmail = 'admin-test@rvrjcce.edu.in';
+    console.log(`🧪 Using test email: ${testEmail}`);
     
     const resultElement = document.getElementById('creditTestResult');
     if (resultElement) {
-      resultElement.innerHTML = `<span style="color: #2196f3;">🔄 Testing ${action.replace(/_/g, ' ')}...</span>`;
+      resultElement.innerHTML = `<span style="color: #2196f3;">🔄 Testing ${action.replace(/_/g, ' ')} with test user...</span>`;
     }
     
     // Initialize user if needed
-    await initializeUserCredits(userEmail);
+    await initializeUserCredits(testEmail);
     
     // Test the credit action
-    const result = await updateUserCredits(userEmail, action);
+    const result = await updateUserCredits(testEmail, action);
     
     if (result !== null) {
       console.log(`✅ Test successful! New credit score: ${result}`);
@@ -3691,8 +3680,11 @@ async function testCreditSystemAction(action) {
         resultElement.innerHTML = `<span style="color: #4caf50;">✅ ${action.replace(/_/g, ' ')} test successful! New credit score: ${result.toFixed(2)}</span>`;
       }
       
-      // Refresh the display
-      await loadCurrentUserCredits();
+      // Refresh the display - use test email for admin dashboard
+      if (window.location.pathname.includes('admin-dashboard.html')) {
+        // For admin dashboard, we'll refresh the test user credits display
+        console.log('🔄 Refreshing admin dashboard credits display...');
+      }
       
       // Clear result after 5 seconds
       setTimeout(() => {
