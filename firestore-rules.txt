@@ -1,0 +1,71 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===== USER MANAGEMENT =====
+    match /users/{userEmail} {
+      // Allow users to read/write their own user document by email
+      allow read, write: if request.auth != null && 
+        request.auth.token.email == userEmail;
+      
+      // Allow admin access (all authenticated users for now)
+      allow read, write: if request.auth != null;
+    }
+    
+    // ===== COMPLAINTS MANAGEMENT =====
+    match /complaints/{complaintId} {
+      // Allow anyone to create complaints (for anonymous submissions)
+      allow create: if true;
+      
+      // Allow public read access for admin dashboard
+      allow read: if true;
+      
+      // Allow users to read their own complaints by email
+      allow read: if request.auth != null && 
+        resource.data.email == request.auth.token.email;
+      
+      // Allow authenticated users to update/delete complaints (temporarily more permissive)
+      allow update, delete: if request.auth != null;
+    }
+    
+    // ===== BOUNCED COMPLAINTS MANAGEMENT =====
+    match /bouncedComplaints/{bouncedId} {
+      // Allow public read access for admin dashboard
+      allow read: if true;
+      
+      // Allow authenticated users to create bounced complaints
+      allow create: if request.auth != null;
+      
+      // Allow authenticated users to update/delete bounced complaints
+      allow update, delete: if request.auth != null;
+    }
+    
+    // ===== ANNOUNCEMENTS MANAGEMENT =====
+    match /announcements/{announcementId} {
+      // Allow public read access for announcements
+      allow read: if true;
+      
+      // Allow authenticated users to create announcements
+      allow create: if request.auth != null;
+      
+      // Allow authenticated users to update/delete announcements (temporarily more permissive)
+      allow update, delete: if request.auth != null;
+    }
+    
+    // ===== ANNOUNCEMENT REQUESTS =====
+    match /announcementRequests/{requestId} {
+      // Allow authenticated users to create requests
+      allow create: if request.auth != null;
+      
+      // Allow authenticated users to read/write requests (temporarily more permissive)
+      allow read, write: if request.auth != null;
+    }
+    
+    // ===== HELPER FUNCTIONS =====
+    
+    // Check if user is admin (allows all authenticated users as admin for now)
+    function isAdmin(uid) {
+      return request.auth != null;
+    }
+  }
+} 

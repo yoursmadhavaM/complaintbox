@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - College Complaints</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <div class="college-banner">
+        <img src="https://image2url.com/images/1756274440672-9059ea59-82f6-4890-8342-990e01fee35e.png" alt="RVR & JC College of Engineering Banner" class="banner-image">
+    </div>
+    <div class="form-container">
+        <h2>Register</h2>
+        <form id="registerForm">
+            <label for="registerName">Name:</label>
+            <input type="text" id="registerName" name="registerName" required placeholder="Enter your name" autocomplete="name">
+            <label for="registerEmail">Email:</label>
+            <input type="email" id="registerEmail" name="registerEmail" required placeholder="Enter your email" autocomplete="email">
+            <label for="userType">User Type:</label>
+            <select id="userType" name="userType" required>
+                <option value="">Select User Type</option>
+                <option value="student">Student</option>
+                <option value="faculty">Faculty</option>
+                <option value="parent">Parent</option>
+                <option value="other">Other</option>
+            </select>
+            <div id="studentRegdDiv" style="display:none;">
+                <label for="studentRegd">Student Registration Number:</label>
+                <input type="text" id="studentRegd" name="studentRegd" placeholder="e.g., L24CD207" pattern="[LY]\d{2}[A-Z]{2}\d{3}" title="Format: L/Y + 2 digits + 2 letters + 3 digits (e.g., L24CD207)">
+                <small style="color:#666;font-size:0.9em;">Format: L/Y + Year + Branch + Number (e.g., L24CD207, Y23CD047)</small>
+            </div>
+            <div id="facultyIdDiv" style="display:none;">
+                <label for="facultyId">Faculty ID:</label>
+                <input type="text" id="facultyId" name="facultyId" maxlength="6" pattern="\d{6}" placeholder="6 digit Faculty ID">
+                <small style="color:#666;font-size:0.9em;">6 digit numeric Faculty ID</small>
+            </div>
+            <div id="parentDiv" style="display:none;">
+                <label for="parentContact">Contact Number:</label>
+                <input type="text" id="parentContact" name="parentContact" maxlength="10" pattern="\d{10}" placeholder="10 digit contact number">
+                <label for="childName">Child Name:</label>
+                <input type="text" id="childName" name="childName" placeholder="Enter your child's name">
+                <label for="childRegd">Child Registration Number:</label>
+                <input type="text" id="childRegd" name="childRegd" placeholder="e.g., L24CD207" pattern="[LY]\d{2}[A-Z]{2}\d{3}" title="Format: L/Y + 2 digits + 2 letters + 3 digits (e.g., L24CD207)">
+                <small style="color:#666;font-size:0.9em;">Format: L/Y + Year + Branch + Number (e.g., L24CD207, Y23CD047)</small>
+            </div>
+            <div id="otherDiv" style="display:none;">
+                <label for="otherSpecify">Please specify:</label>
+                <input type="text" id="otherSpecify" name="otherSpecify" placeholder="e.g., Alumni, Guest, etc.">
+            </div>
+            
+            <label for="registerPassword">Password:</label>
+            <input type="password" id="registerPassword" name="registerPassword" required placeholder="Enter your password" autocomplete="off">
+            <div class="terms-container">
+                <input type="checkbox" id="registerTerms" name="registerTerms" required>
+                <label for="registerTerms">I accept the <a href="terms.html" target="_blank">Terms and Conditions</a></label>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <p>Already have an account? <a href="login.html">Login</a></p>
+        <p><a href="index.html">Back to Complaint Submission</a></p>
+    </div>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+    <!-- Your main JS -->
+    <script src="script.js"></script>
+</body>
+</html> 
