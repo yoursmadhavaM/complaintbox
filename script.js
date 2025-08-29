@@ -300,7 +300,7 @@ function setupIndexPage() {
   if (adminLoginBtn) {
     adminLoginBtn.onclick = function() {
       console.log('Admin login button clicked');
-      window.location.href = 'admin-login.html';
+      window.location.href = 'admin-dashboard.html';
     };
   }
 
@@ -2359,38 +2359,18 @@ function showComplaintDetails(id, data) {
 function setupAdminDashboard() {
   console.log('Setting up admin dashboard...');
   
-  // Check authentication first
-  auth.onAuthStateChanged(async function(user) {
-    if (user) {
-      console.log('✅ Admin authenticated:', user.email);
-      
-      // Check if user is marked as admin
-      const isAdmin = localStorage.getItem('isAdmin') === 'true';
-      if (!isAdmin) {
-        console.log('❌ User not marked as admin, redirecting to admin login...');
-        window.location.href = 'admin-login.html';
-        return;
-      }
-      
-      console.log('✅ Admin access confirmed, loading dashboard...');
-      
-      // Load admin data only when authenticated
-      setupSidebar();
-      setupAnnouncementBar();
-      loadAdminAnnouncementRequests();
-      loadAdminAnnouncements();
-      loadAdminComplaints();
-      loadAdminResolvedComplaints();
-      loadAdminTokens();
-      loadBouncedComplaints();
-      loadCurrentUserCredits();
-    } else {
-      console.log('❌ Admin not authenticated, redirecting to admin login...');
-      // Redirect to admin login page if not authenticated
-      window.location.href = 'admin-login.html';
-      return;
-    }
-  });
+  // Load admin data directly without authentication
+  console.log('✅ Loading admin dashboard...');
+  
+  setupSidebar();
+  setupAnnouncementBar();
+  loadAdminAnnouncementRequests();
+  loadAdminAnnouncements();
+  loadAdminComplaints();
+  loadAdminResolvedComplaints();
+  loadAdminTokens();
+  loadBouncedComplaints();
+  loadCurrentUserCredits();
   
   // Show dashboard on button click
   const adminWelcomeModal = document.getElementById('adminWelcomeModal');
@@ -2410,14 +2390,6 @@ function setupAdminDashboard() {
     resolutionForm.onsubmit = async function(e) {
       e.preventDefault();
       
-      // Check authentication before proceeding
-      const user = auth.currentUser;
-      if (!user) {
-        console.error('❌ User not authenticated for resolution');
-        document.getElementById('resolutionError').textContent = 'Authentication required. Please log in again.';
-        return;
-      }
-      
       const desc = document.getElementById('resolutionDescription').value.trim();
       if (!desc) {
         document.getElementById('resolutionError').textContent = 'Resolution description is required!';
@@ -2426,14 +2398,14 @@ function setupAdminDashboard() {
       if (!resolveComplaintId) return;
       
       try {
-        console.log('🔄 Resolving complaint with authenticated user:', user.email);
+        console.log('🔄 Resolving complaint...');
         
         // Update complaint status
         await db.collection('complaints').doc(resolveComplaintId).update({ 
           status: 'resolved', 
           resolutionDescription: desc,
           resolvedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          resolvedBy: user.email
+          resolvedBy: 'admin'
         });
         
         // Update user credits if this is a re-resolution of a bounced complaint
@@ -2472,27 +2444,15 @@ function setupAdminDashboard() {
     adminAnnouncementForm.onsubmit = async function(e) {
       e.preventDefault();
       
-      // Check authentication before proceeding
-      const user = auth.currentUser;
-      if (!user) {
-        console.error('❌ User not authenticated for announcement');
-        if (adminAnnouncementResult) {
-          adminAnnouncementResult.color = '#e53935';
-          adminAnnouncementResult.textContent = 'Authentication required. Please log in again.';
-          setTimeout(() => { adminAnnouncementResult.textContent = ''; }, 3000);
-        }
-        return;
-      }
-      
       const text = adminAnnouncementText.value.trim();
       if (!text) return;
       try {
-        console.log('🔄 Adding announcement with authenticated user:', user.email);
+        console.log('🔄 Adding announcement...');
         
         await db.collection('announcements').add({
           text,
           status: 'approved',
-          createdBy: user.email,
+          createdBy: 'admin',
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         adminAnnouncementText.value = '';
@@ -2744,29 +2704,7 @@ function setupTokenSearch() {
   }
 }
 
-// --- Admin Logout Function ---
-async function adminLogout() {
-  try {
-    console.log('🔄 Admin logging out...');
-    
-    // Sign out from Firebase
-    await firebase.auth().signOut();
-    
-    // Clear admin status from localStorage
-    localStorage.removeItem('isAdmin');
-    localStorage.removeItem('adminEmail');
-    
-    console.log('✅ Admin logged out successfully');
-    
-    // Redirect to home page
-    window.location.href = 'index.html';
-    
-  } catch (error) {
-    console.error('❌ Error during admin logout:', error);
-    // Force redirect even if there's an error
-    window.location.href = 'index.html';
-  }
-}
+
 
 // --- Admin: Load All Tokens ---
 async function loadAdminTokens(searchTerm = '') {
