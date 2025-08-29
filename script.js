@@ -300,7 +300,7 @@ function setupIndexPage() {
   if (adminLoginBtn) {
     adminLoginBtn.onclick = function() {
       console.log('Admin login button clicked');
-      window.location.href = 'admin-dashboard.html';
+      window.location.href = 'admin-login.html';
     };
   }
 
@@ -2364,6 +2364,16 @@ function setupAdminDashboard() {
     if (user) {
       console.log('✅ Admin authenticated:', user.email);
       
+      // Check if user is marked as admin
+      const isAdmin = localStorage.getItem('isAdmin') === 'true';
+      if (!isAdmin) {
+        console.log('❌ User not marked as admin, redirecting to admin login...');
+        window.location.href = 'admin-login.html';
+        return;
+      }
+      
+      console.log('✅ Admin access confirmed, loading dashboard...');
+      
       // Load admin data only when authenticated
       setupSidebar();
       setupAnnouncementBar();
@@ -2375,9 +2385,9 @@ function setupAdminDashboard() {
       loadBouncedComplaints();
       loadCurrentUserCredits();
     } else {
-      console.log('❌ Admin not authenticated, redirecting to login...');
-      // Redirect to login page if not authenticated
-      window.location.href = 'login.html';
+      console.log('❌ Admin not authenticated, redirecting to admin login...');
+      // Redirect to admin login page if not authenticated
+      window.location.href = 'admin-login.html';
       return;
     }
   });
@@ -2722,7 +2732,7 @@ function setupTokenSearch() {
     };
     
     // Enter key support for search
-    tokenSearchInput.addEventListener('keypress', function(e) {
+    tokenSearchBtn.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         tokenSearchBtn.click();
       }
@@ -2731,6 +2741,30 @@ function setupTokenSearch() {
     console.log('✅ Token search functionality setup completed');
   } else {
     console.log('⚠️ Token search elements not found');
+  }
+}
+
+// --- Admin Logout Function ---
+async function adminLogout() {
+  try {
+    console.log('🔄 Admin logging out...');
+    
+    // Sign out from Firebase
+    await firebase.auth().signOut();
+    
+    // Clear admin status from localStorage
+    localStorage.removeItem('isAdmin');
+    localStorage.removeItem('adminEmail');
+    
+    console.log('✅ Admin logged out successfully');
+    
+    // Redirect to home page
+    window.location.href = 'index.html';
+    
+  } catch (error) {
+    console.error('❌ Error during admin logout:', error);
+    // Force redirect even if there's an error
+    window.location.href = 'index.html';
   }
 }
 
