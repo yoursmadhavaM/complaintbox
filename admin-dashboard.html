@@ -207,55 +207,52 @@
           </div>
         </div>
 
-        <!-- Credit System Testing & Management -->
-        <div class="credit-management-section" style="background: #fff3e0; padding: 25px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #ffb74d;">
-          <h3 style="margin: 0 0 20px 0; color: #e65100; font-size: 1.5rem;">
-            <i class="fa-solid fa-cogs"></i> System Management & Testing
+        <!-- Real-Time Credit System Monitoring -->
+        <div class="credit-monitoring-section" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 25px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #2196f3;">
+          <h3 style="margin: 0 0 20px 0; color: #1565c0; font-size: 1.5rem;">
+            <i class="fa-solid fa-chart-line"></i> Real-Time Credit System Monitoring
           </h3>
           
-          <!-- Admin Access Control -->
-          <div style="background: rgba(255,255,255,0.7); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-            <h4 style="margin: 0 0 15px 0; color: #e65100;">
-              <i class="fa-solid fa-lock"></i> Advanced Credit Reports Access
+          <!-- Live Credit System Status -->
+          <div style="background: rgba(255,255,255,0.9); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+            <h4 style="margin: 0 0 15px 0; color: #1565c0;">
+              <i class="fa-solid fa-satellite-dish"></i> Live System Status
             </h4>
-            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-              <input type="password" id="adminCreditPassword" placeholder="Enter admin password" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; min-width: 250px; font-size: 1rem;">
-              <button id="accessCreditReportsBtn" style="background: #ff9800; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s ease;">
-                <i class="fa-solid fa-unlock"></i> Access Reports
-              </button>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+              <div style="text-align: center; padding: 15px; background: rgba(76, 175, 80, 0.1); border-radius: 8px; border: 1px solid rgba(76, 175, 80, 0.3);">
+                <div style="font-size: 1.2rem; font-weight: bold; color: #4caf50;" id="liveCreditScore">-</div>
+                <div style="font-size: 0.9rem; color: #666;">Current Credit Score</div>
+              </div>
+              <div style="text-align: center; padding: 15px; background: rgba(33, 150, 243, 0.1); border-radius: 8px; border: 1px solid rgba(33, 150, 243, 0.3);">
+                <div style="font-size: 1.2rem; font-weight: bold; color: #2196f3;" id="liveTotalCredits">-</div>
+                <div style="font-size: 0.9rem; color: #666;">Total Credits</div>
+              </div>
+              <div style="text-align: center; padding: 15px; background: rgba(255, 152, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 152, 0, 0.3);">
+                <div style="font-size: 1.2rem; font-weight: bold; color: #ff9800;" id="liveComplaintsCount">-</div>
+                <div style="font-size: 0.9rem; color: #666;">Active Complaints</div>
+              </div>
             </div>
-            <div id="creditAccessResult" style="margin-top: 12px; font-weight: 600;"></div>
           </div>
           
-          <!-- Credit System Testing -->
-          <div style="background: rgba(255,255,255,0.7); padding: 20px; border-radius: 10px;">
-            <h4 style="margin: 0 0 15px 0; color: #e65100;">
-              <i class="fa-solid fa-vial"></i> Credit System Testing Tools
+          <!-- Credit System Actions -->
+          <div style="background: rgba(255,255,255,0.9); padding: 20px; border-radius: 10px;">
+            <h4 style="margin: 0 0 15px 0; color: #1565c0;">
+              <i class="fa-solid fa-tools"></i> System Maintenance Tools
             </h4>
-            <p style="margin: 0 0 15px 0; color: #666; font-size: 0.9rem;">
-              Test different credit scenarios to verify system functionality
-            </p>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 15px;">
-              <button onclick="testCreditSystemAction('complaint_submitted')" style="background: #4caf50; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.3s ease;">
-                <i class="fa-solid fa-plus"></i> Test Submit
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+              <button onclick="refreshCreditSystem()" style="background: #2196f3; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s ease;">
+                <i class="fa-solid fa-sync-alt"></i> Refresh System
               </button>
-              <button onclick="testCreditSystemAction('complaint_resolved')" style="background: #2196f3; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.3s ease;">
-                <i class="fa-solid fa-check"></i> Test Resolve
-              </button>
-              <button onclick="testCreditSystemAction('complaint_bounced')" style="background: #f44336; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.3s ease;">
-                <i class="fa-solid fa-undo"></i> Test Bounce
-              </button>
-              <button onclick="testCreditSystemAction('bounced_re_resolved')" style="background: #9c27b0; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.3s ease;">
-                <i class="fa-solid fa-redo"></i> Test Re-resolve
-              </button>
-              <button onclick="testCreditSystemAction('complaint_overdue')" style="background: #ff9800; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.3s ease;">
-                <i class="fa-solid fa-clock"></i> Test Overdue
-              </button>
-              <button onclick="fixBouncedComplaintsCredits()" style="background: #e91e63; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.3s ease;">
+              <button onclick="fixBouncedComplaintsCredits()" style="background: #e91e63; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s ease;">
                 <i class="fa-solid fa-wrench"></i> Fix Bounced Credits
               </button>
+              <button onclick="checkOverdueComplaints()" style="background: #ff9800; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s ease;">
+                <i class="fa-solid fa-clock"></i> Check Overdue
+              </button>
             </div>
-            <div id="creditTestResult" style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.8); border-radius: 8px; font-size: 0.9rem; font-weight: 600; min-height: 20px;"></div>
+            <div id="creditSystemStatus" style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.8); border-radius: 8px; font-size: 0.9rem; font-weight: 600; min-height: 20px; border-left: 4px solid #2196f3;">
+              <span style="color: #2196f3;">🔄 System ready. Click "Refresh System" to update live data.</span>
+            </div>
           </div>
         </div>
 

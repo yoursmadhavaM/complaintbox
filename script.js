@@ -2372,6 +2372,9 @@ function setupAdminDashboard() {
   loadBouncedComplaints();
   loadCurrentUserCredits();
   
+  // Load live credit system status
+  updateLiveCreditStatus();
+  
   // Show dashboard on button click
   const adminWelcomeModal = document.getElementById('adminWelcomeModal');
   const adminEnterBtn = document.getElementById('adminEnterBtn');
@@ -2514,8 +2517,13 @@ function setupAdminDashboard() {
       loadBouncedComplaints();
       loadAdminStatistics();
       loadCurrentUserCredits();
+      updateLiveCreditStatus(); // Also refresh live credit status
     };
   }
+  
+  // Set up real-time credit system updates (every 30 seconds)
+  setInterval(updateLiveCreditStatus, 30000);
+  console.log('✅ Real-time credit system updates enabled (30s interval)');
 }
 
 // --- Admin: Setup Filter Functionality ---
@@ -3652,58 +3660,174 @@ async function manualCreditUpdate(userEmail, action) {
   }
 }
 
-// --- Test Credit System Function ---
+// --- Real-Time Credit System Functions ---
 
-// --- Handle Credit System Test Actions ---
-async function testCreditSystemAction(action) {
+// --- Refresh Credit System Function ---
+async function refreshCreditSystem() {
   try {
-    console.log(`🧪 Testing credit system action: ${action}`);
+    console.log('🔄 Refreshing credit system...');
     
-    // Use a test email for credit system testing since admin doesn't need login
-    const testEmail = 'admin-test@rvrjcce.edu.in';
-    console.log(`🧪 Using test email: ${testEmail}`);
-    
-    const resultElement = document.getElementById('creditTestResult');
-    if (resultElement) {
-      resultElement.innerHTML = `<span style="color: #2196f3;">🔄 Testing ${action.replace(/_/g, ' ')} with test user...</span>`;
+    const statusElement = document.getElementById('creditSystemStatus');
+    if (statusElement) {
+      statusElement.innerHTML = '<span style="color: #2196f3;">🔄 Refreshing system data...</span>';
     }
     
-    // Initialize user if needed
-    await initializeUserCredits(testEmail);
+    // Update live credit system status
+    await updateLiveCreditStatus();
     
-    // Test the credit action
-    const result = await updateUserCredits(testEmail, action);
+    // Refresh credit reports if visible
+    if (document.getElementById('creditReportsSection').style.display !== 'none') {
+      await loadCreditReports();
+    }
     
-    if (result !== null) {
-      console.log(`✅ Test successful! New credit score: ${result}`);
-      if (resultElement) {
-        resultElement.innerHTML = `<span style="color: #4caf50;">✅ ${action.replace(/_/g, ' ')} test successful! New credit score: ${result.toFixed(2)}</span>`;
-      }
-      
-      // Refresh the display - use test email for admin dashboard
-      if (window.location.pathname.includes('admin-dashboard.html')) {
-        // For admin dashboard, we'll refresh the test user credits display
-        console.log('🔄 Refreshing admin dashboard credits display...');
-      }
-      
-      // Clear result after 5 seconds
+    if (statusElement) {
+      statusElement.innerHTML = '<span style="color: #4caf50;">✅ System refreshed successfully!</span>';
+      // Clear success message after 3 seconds
       setTimeout(() => {
-        if (resultElement) {
-          resultElement.innerHTML = '';
-        }
-      }, 5000);
-    } else {
-      console.error('❌ Test failed');
-      if (resultElement) {
-        resultElement.innerHTML = '<span style="color: #f44336;">❌ Test failed. Please try again.</span>';
-      }
+        statusElement.innerHTML = '<span style="color: #2196f3;">🔄 System ready. Click "Refresh System" to update live data.</span>';
+      }, 3000);
     }
+    
+    console.log('✅ Credit system refreshed successfully');
     
   } catch (error) {
-    console.error('❌ Error in credit system test:', error);
-    const resultElement = document.getElementById('creditTestResult');
-    if (resultElement) {
-      resultElement.innerHTML = '<span style="color: #f44336;">❌ Error during test. Please try again.</span>';
+    console.error('❌ Error refreshing credit system:', error);
+    const statusElement = document.getElementById('creditSystemStatus');
+    if (statusElement) {
+      statusElement.innerHTML = '<span style="color: #f44336;">❌ Error refreshing system. Please try again.</span>';
+      // Clear error message after 5 seconds
+      setTimeout(() => {
+        statusElement.innerHTML = '<span style="color: #2196f3;">🔄 System ready. Click "Refresh System" to update live data.</span>';
+      }, 5000);
+    }
+  }
+}
+
+// --- Update Live Credit Status Function ---
+async function updateLiveCreditStatus() {
+  try {
+    console.log('📊 Updating live credit status...');
+    
+    // Get real-time data from Firestore
+    const usersSnapshot = await db.collection('users').get();
+    const complaintsSnapshot = await db.collection('complaints').get();
+    
+    let totalUsers = 0;
+    let totalCreditScore = 0;
+    let activeComplaints = 0;
+    let currentUserCredits = 0;
+    let currentUserScore = 0;
+    
+    // Calculate user statistics
+    usersSnapshot.forEach(doc => {
+      const userData = doc.data();
+      if (userData.creditScore !== undefined) {
+        totalUsers++;
+        totalCreditScore += parseFloat(userData.creditScore || 0);
+        
+        // For admin dashboard, show current user (test user) data
+        if (doc.id === 'admin-test@rvrjcce.edu.in') {
+          currentUserCredits = parseFloat(userData.totalCredits || 100);
+          currentUserScore = parseFloat(userData.creditScore || 100);
+        }
+      }
+    });
+    
+    // Calculate active complaints
+    complaintsSnapshot.forEach(doc => {
+      const complaintData = doc.data();
+      if (complaintData.status === 'submitted' || complaintData.status === 'in_progress') {
+        activeComplaints++;
+      }
+    });
+    
+    // Update live display elements
+    const liveCreditScore = document.getElementById('liveCreditScore');
+    const liveTotalCredits = document.getElementById('liveTotalCredits');
+    const liveComplaintsCount = document.getElementById('liveComplaintsCount');
+    
+    if (liveCreditScore) liveCreditScore.textContent = currentUserScore.toFixed(2);
+    if (liveTotalCredits) liveTotalCredits.textContent = currentUserCredits.toFixed(2);
+    if (liveComplaintsCount) liveComplaintsCount.textContent = activeComplaints.toString();
+    
+    console.log('✅ Live credit status updated:', {
+      totalUsers,
+      averageCreditScore: totalUsers > 0 ? (totalCreditScore / totalUsers).toFixed(2) : 0,
+      activeComplaints,
+      currentUserCredits: currentUserCredits.toFixed(2),
+      currentUserScore: currentUserScore.toFixed(2)
+    });
+    
+  } catch (error) {
+    console.error('❌ Error updating live credit status:', error);
+  }
+}
+
+// --- Enhanced Check Overdue Complaints Function ---
+async function checkOverdueComplaints() {
+  try {
+    console.log('⏰ Checking for overdue complaints...');
+    
+    const statusElement = document.getElementById('creditSystemStatus');
+    if (statusElement) {
+      statusElement.innerHTML = '<span style="color: #ff9800;">⏰ Checking overdue complaints...</span>';
+    }
+    
+    const now = new Date();
+    const complaintsSnapshot = await db.collection('complaints').get();
+    let overdueCount = 0;
+    let updatedCount = 0;
+    
+    complaintsSnapshot.forEach(async (doc) => {
+      const complaintData = doc.data();
+      if (complaintData.status === 'submitted' || complaintData.status === 'in_progress') {
+        const createdAt = complaintData.createdAt;
+        if (createdAt && createdAt.toDate) {
+          const complaintDate = createdAt.toDate();
+          const daysDiff = Math.floor((now - complaintDate) / (1000 * 60 * 60 * 24));
+          
+          if (daysDiff > 7) { // 7 days threshold
+            overdueCount++;
+            
+            // Update complaint status to overdue
+            try {
+              await db.collection('complaints').doc(doc.id).update({
+                status: 'overdue',
+                overdueAt: now
+              });
+              updatedCount++;
+              
+              // Update user credits for overdue complaint
+              if (complaintData.email && complaintData.email !== 'anonymous') {
+                await updateUserCredits(complaintData.email, 'complaint_overdue');
+              }
+            } catch (updateError) {
+              console.error(`❌ Error updating complaint ${doc.id}:`, updateError);
+            }
+          }
+        }
+      }
+    });
+    
+    if (statusElement) {
+      statusElement.innerHTML = `<span style="color: #4caf50;">✅ Found ${overdueCount} overdue complaints, updated ${updatedCount} successfully!</span>`;
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        statusElement.innerHTML = '<span style="color: #2196f3;">🔄 System ready. Click "Refresh System" to update live data.</span>';
+      }, 5000);
+    }
+    
+    console.log(`✅ Overdue check completed: ${overdueCount} overdue, ${updatedCount} updated`);
+    
+  } catch (error) {
+    console.error('❌ Error checking overdue complaints:', error);
+    const statusElement = document.getElementById('creditSystemStatus');
+    if (statusElement) {
+      statusElement.innerHTML = '<span style="color: #f44336;">❌ Error checking overdue complaints. Please try again.</span>';
+      // Clear error message after 5 seconds
+      setTimeout(() => {
+        statusElement.innerHTML = '<span style="color: #2196f3;">🔄 System ready. Click "Refresh System" to update live data.</span>';
+      }, 5000);
     }
   }
 }
