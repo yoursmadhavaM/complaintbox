@@ -1,0 +1,17 @@
+{
+  "firestore": {
+    "rules": "firestore-rules.txt",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "firestore-rules.txt",
+      "firestore.indexes.json",
+      "serviceAccountKey.json"
+    ]
+  }
+}
