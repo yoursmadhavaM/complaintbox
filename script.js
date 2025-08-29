@@ -2412,10 +2412,24 @@ function setupAdminDashboard() {
         const complaintDoc = await db.collection('complaints').doc(resolveComplaintId).get();
         if (complaintDoc.exists) {
           const complaintData = complaintDoc.data();
-          if (complaintData.status === 'bounced' && complaintData.email) {
-            await updateUserCredits(complaintData.email, 'bounced_re_resolved');
-          } else if (complaintData.email) {
-            await updateUserCredits(complaintData.email, 'complaint_resolved');
+          console.log('📋 Complaint data for credit update:', complaintData);
+          
+          // Only update credits if complaint has a valid email (not anonymous)
+          if (complaintData.email && complaintData.email !== 'anonymous' && complaintData.email.trim() !== '') {
+            try {
+              if (complaintData.status === 'bounced') {
+                console.log('🔄 Updating credits for bounced complaint re-resolution');
+                await updateUserCredits(complaintData.email, 'bounced_re_resolved');
+              } else {
+                console.log('🔄 Updating credits for complaint resolution');
+                await updateUserCredits(complaintData.email, 'complaint_resolved');
+              }
+            } catch (creditError) {
+              console.error('⚠️ Credit update failed, but complaint resolution continues:', creditError);
+              // Don't let credit errors break complaint resolution
+            }
+          } else {
+            console.log('⚠️ No valid email found for credit update, skipping...');
           }
         }
         
@@ -2919,14 +2933,23 @@ async function updateUserCredits(userEmail, action, complaintId = null) {
     }
     
     const userRef = db.collection('users').doc(userEmail);
-    const userDoc = await userRef.get();
+    let userDoc = await userRef.get();
     
     if (!userDoc.exists) {
       console.log(`⚠️ User document not found, creating new user: ${userEmail}`);
       await initializeUserCredits(userEmail);
+      // Get the newly created document
+      userDoc = await userRef.get();
     }
     
     const userData = userDoc.data();
+    console.log(`📊 User data retrieved:`, userData);
+    
+    if (!userData) {
+      console.error(`❌ User data is null/undefined for: ${userEmail}`);
+      return null;
+    }
+    
     let newCreditScore = userData.creditScore || 100.0;
     let newTotalCredits = userData.totalCredits || 100.0;
     let updateData = {
