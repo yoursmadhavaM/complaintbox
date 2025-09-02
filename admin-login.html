@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Anonymous Complaint Box</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+  <div class="college-banner">
+    <img src="https://image2url.com/images/1756274440672-9059ea59-82f6-4890-8342-990e01fee35e.png" alt="RVR & JC College of Engineering Banner" class="banner-image">
+  </div>
+
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1><i class="fa-solid fa-user-shield"></i> Admin Login</h1>
+        <p>Access the Admin Dashboard</p>
+      </div>
+
+      <form id="adminLoginForm" class="auth-form">
+        <div class="form-group">
+          <label for="adminEmail">Email Address</label>
+          <input type="email" id="adminEmail" name="adminEmail" required placeholder="Enter your admin email">
+        </div>
+
+        <div class="form-group">
+          <label for="adminPassword">Password</label>
+          <input type="password" id="adminPassword" name="adminPassword" required placeholder="Enter your password">
+        </div>
+
+        <button type="submit" class="auth-submit-btn">
+          <i class="fa-solid fa-sign-in-alt"></i> Login as Admin
+        </button>
+      </form>
+
+      <div id="adminLoginResult" class="auth-result"></div>
+
+      <div class="auth-links">
+        <a href="index.html" class="back-link">
+          <i class="fa-solid fa-arrow-left"></i> Back to Home
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  
+  <!-- Your main JS -->
+  <script src="script.js"></script>
+  
+  <script>
+    // Admin login specific logic
+    document.addEventListener('DOMContentLoaded', function() {
+      const adminLoginForm = document.getElementById('adminLoginForm');
+      const adminLoginResult = document.getElementById('adminLoginResult');
+      
+      if (adminLoginForm) {
+        adminLoginForm.onsubmit = async function(e) {
+          e.preventDefault();
+          
+          const email = document.getElementById('adminEmail').value.trim();
+          const password = document.getElementById('adminPassword').value;
+          
+          if (!email || !password) {
+            adminLoginResult.innerHTML = '<div class="error-message">Please fill in all fields.</div>';
+            return;
+          }
+          
+          try {
+            adminLoginResult.innerHTML = '<div class="info-message">Logging in...</div>';
+            
+            // Attempt to sign in with Firebase Auth
+            const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+            
+            console.log('Admin login successful:', user.email);
+            
+            // Store admin status in localStorage
+            localStorage.setItem('isAdmin', 'true');
+            localStorage.setItem('adminEmail', user.email);
+            
+            // Redirect to admin dashboard
+            window.location.href = 'admin-dashboard.html';
+            
+          } catch (error) {
+            console.error('Admin login error:', error);
+            
+            let errorMessage = 'Login failed. Please try again.';
+            
+            if (error.code === 'auth/user-not-found') {
+              errorMessage = 'Admin account not found.';
+            } else if (error.code === 'auth/wrong-password') {
+              errorMessage = 'Incorrect password.';
+            } else if (error.code === 'auth/invalid-email') {
+              errorMessage = 'Invalid email format.';
+            } else if (error.code === 'auth/too-many-requests') {
+              errorMessage = 'Too many failed attempts. Please try again later.';
+            }
+            
+            adminLoginResult.innerHTML = `<div class="error-message">${errorMessage}</div>`;
+          }
+        };
+      }
+    });
+  </script>
+</body>
+</html>

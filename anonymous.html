@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Complaint Submission</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="logo-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- College Banner -->
+    <div class="college-banner">
+        <img src="https://image2url.com/images/1756274440672-9059ea59-82f6-4890-8342-990e01fee35e.png" alt="RVR & JC College of Engineering Banner" class="banner-image">
+    </div>
+
+    <!-- Anonymous Complaint Form -->
+    <div class="form-container">
+        <h1><i class="fa-solid fa-user-secret"></i> Anonymous Complaint Submission</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">
+            Submit your complaint anonymously. No personal information will be collected.
+        </p>
+        
+        <form id="anonymousComplaintForm">
+            <div class="form-group">
+                <label for="complaintType">Complaint Type:</label>
+                <select id="complaintType" name="complaintType" required>
+                    <option value="">Select Complaint Type</option>
+                    <option value="academic">Academic</option>
+                    <option value="infrastructure">Infrastructure</option>
+                    <option value="faculty">Faculty</option>
+                    <option value="hostel">Hostel</option>
+                    <option value="transportation">Transportation</option>
+                    <option value="canteen">Canteen</option>
+                    <option value="library">Library</option>
+                    <option value="sports">Sports</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="complaintDescription">Description:</label>
+                <textarea id="complaintDescription" name="complaintDescription" rows="4" required placeholder="Describe your complaint"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="requiredResolution">What resolution do you require?</label>
+                <textarea id="requiredResolution" name="requiredResolution" rows="3" required placeholder="Specify expected action"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" onclick="window.location.href='index.html'" class="btn-secondary">Back to Home</button>
+                <button type="submit" class="btn-primary">Submit Anonymous Complaint</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Token Display Section -->
+    <div id="tokenSection" style="display:none;" class="form-container">
+        <h2><i class="fa-solid fa-check-circle"></i> Complaint Submitted Successfully!</h2>
+        <p>Your anonymous complaint has been submitted. Please save this token for status tracking:</p>
+        <div id="tokenDisplay" style="font-size: 1.5rem; font-weight: bold; color: #4f8cff; text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px; margin: 20px 0;"></div>
+        <div style="text-align: center;">
+            <button onclick="window.location.href='status.html'" class="btn-primary">Check Status</button>
+            <button onclick="window.location.href='index.html'" class="btn-secondary">Back to Home</button>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 

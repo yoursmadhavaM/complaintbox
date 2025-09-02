@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Complaint Status</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <div class="college-banner">
+        <img src="https://image2url.com/images/1756274440672-9059ea59-82f6-4890-8342-990e01fee35e.png" alt="RVR & JC College of Engineering Banner" class="banner-image">
+    </div>
+    <div class="form-container">
+        <h2>Check Complaint Status</h2>
+        <form id="statusForm">
+            <label for="token">Enter Your Complaint Token:</label>
+            <input type="text" id="token" name="token" required>
+            <button type="submit">Check Status</button>
+        </form>
+        <div id="statusResult"></div>
+        
+        <!-- Rating Section (Hidden by default) -->
+        <div id="ratingSection" style="display: none; margin-top: 20px; padding: 20px; background: #e8f5e8; border: 1px solid #4caf50; border-radius: 10px;">
+          <!-- Rating interface will be dynamically loaded here -->
+        </div>
+
+        <!-- Bounce Button (Hidden by default) -->
+        <div id="bounceSection" style="display: none; margin-top: 20px; padding: 20px; background: #fff3e0; border: 1px solid #ffb74d; border-radius: 10px;">
+          <h3 style="margin: 0 0 15px 0; color: #e65100;">
+            <i class="fa-solid fa-exclamation-triangle"></i> Disagree with Resolution?
+          </h3>
+          <p style="margin: 0 0 15px 0; color: #e65100;">
+            If you believe your complaint was not properly resolved, you can bounce this token. 
+            This will notify administrators to review the case again.
+          </p>
+          <button id="bounceTokenBtn" style="background: #f44336; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600;">
+            <i class="fa-solid fa-undo"></i> Bounce Token
+          </button>
+          <div id="bounceResult" style="margin-top: 10px;"></div>
+          
+          <!-- Credit Check Button -->
+          <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ffb74d;">
+            <button onclick="checkCreditsAfterBounce()" style="background: #2196f3; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.9rem;">
+              <i class="fa-solid fa-coins"></i> Check Credits
+            </button>
+            <div id="creditCheckResult" style="margin-top: 10px; font-size: 0.9rem;"></div>
+          </div>
+        </div>
+        
+        <p><a href="index.html">Back to Complaint Submission</a></p>
+    </div>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <!-- Your main JS -->
+    <script src="script.js"></script>
+</body>
+</html> 

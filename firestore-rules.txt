@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===== USER MANAGEMENT =====
+    match /users/{userEmail} {
+      // Allow public read/write access for admin operations
+      allow read, write: if true;
+    }
+    
+    // ===== COMPLAINTS MANAGEMENT =====
+    match /complaints/{complaintId} {
+      // Allow anyone to create complaints (for anonymous submissions)
+      allow create: if true;
+      
+      // Allow public read access for admin dashboard
+      allow read: if true;
+      
+      // Allow public update/delete for admin operations
+      allow update, delete: if true;
+    }
+    
+    // ===== BOUNCED COMPLAINTS MANAGEMENT =====
+    match /bouncedComplaints/{bouncedId} {
+      // Allow public read/write access for admin operations
+      allow read, write: if true;
+    }
+    
+    // ===== ANNOUNCEMENTS MANAGEMENT =====
+    match /announcements/{announcementId} {
+      // Allow public read access for announcements
+      allow read: if true;
+      
+      // Allow public create/update/delete for admin operations
+      allow create, update, delete: if true;
+    }
+    
+    // ===== ANNOUNCEMENT REQUESTS =====
+    match /announcementRequests/{requestId} {
+      // Allow public read/write access for admin operations
+      allow read, write: if true;
+    }
+  }
+} 
